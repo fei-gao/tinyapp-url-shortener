@@ -43,8 +43,7 @@ app.get("/u/:shortURL", (req, res) => {
     let urlKey = req.params.shortURL;
     let longURL = urlDatabase[urlKey];
      console.log("longURL is", longURL);
-    // res.redirect(`${longURL}`);
-    res.redirect("longURL");
+    res.redirect(`${longURL}`);
   });
 
 app.get("/urls/:id", (req, res) => {
