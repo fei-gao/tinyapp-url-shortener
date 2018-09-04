@@ -40,10 +40,11 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-     let longURL = urlDatabase[req.params.id];
-     console.log(req.params.id);
-     console.log(longURL);
-    // res.redirect(longURL);
+    let urlKey = req.params.shortURL;
+    let longURL = urlDatabase[urlKey];
+     console.log("longURL is", longURL);
+    // res.redirect(`${longURL}`);
+    res.redirect("longURL");
   });
 
 app.get("/urls/:id", (req, res) => {
