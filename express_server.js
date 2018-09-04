@@ -52,11 +52,6 @@ app.get("/urls/:id", (req, res) => {
     };
     res.render("urls_show", templateVars);
 });
-
-app.get("/u/:shortURL", (req, res) => {
-    // let longURL = ...
-    res.redirect(longURL);
-  });
   
 app.get("/hello", (req, res) => {
     res.send("<html><body>Hello <b>World</b></body></html>\n");
