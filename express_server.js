@@ -91,6 +91,14 @@ app.post("/logout", (req, res) => {
     res.redirect("/urls");
 })
 
+// Register
+app.get("/register", (req, res) => {
+    res.render("register");
+})
+
+app.post("/register", (req, res) => {
+    res.send("registerred");
+})
 // Start the server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
