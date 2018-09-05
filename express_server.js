@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const generateRandomString = require('./index.js');
 
-const PORT = 8080; // default port 8080
+const PORT = 8081; // default port 8080
 
 // Middleware
 app.set('view engine', 'ejs');
@@ -110,14 +110,25 @@ app.post("/register", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const userId = generateRandomString();
+    const userArr = Object.values(users);
+    //handle errors
+    if(!email || !password){
+        res.send("400 Error: Please enter both email and password")
+    } else if (
+        userArr.find(function(user){
+            return email == user.email
+    })){
+            res.send("400 Error: Email already exists");
+    }
+    else {
     users[userId] = {
         "Id": userId,
         "email": email,
         "password": password
     };
-    console.log(users);
     res.cookie('userId', userId);
     res.redirect("/urls");
+    }
 });
 
 // Start the server
