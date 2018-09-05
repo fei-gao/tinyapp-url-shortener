@@ -7,3 +7,16 @@
     <title>Documents</title>
 </head>
 <body>
+
+    <% if(username){ %>
+    <span> <%= username  %></span>
+    <form method="POST" action="/logout" style="display: inline">
+        <input type="submit" value="Logout">
+    </form>
+
+    <% } else{ %>
+        <form method="POST" action="/login" >
+            <input type="text" name="username">
+            <input type="submit" value="Login">
+        </form>
+    <% } %>
