@@ -7,7 +7,7 @@
         <%= key %>
           <a href=" <%= urls[key] %> "> <%= urls[key] %> </a> 
           <a href="/urls/<%= key %>"> Edit </a> 
-          <form method="POST" action="/urls/<%= key %>/delete">
+          <form method="POST" action="/urls/<%= key %>/delete" style="display: inline">
           <input type="submit" value="Delete"> 
         </form>
        </li>
