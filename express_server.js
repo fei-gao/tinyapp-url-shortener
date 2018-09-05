@@ -5,6 +5,7 @@ const generateRandomString = require('./index.js');
 
 const PORT = 8080; // default port 8080
 
+// Middleware
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -13,6 +14,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// Read 
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -37,7 +39,7 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
     let random = generateRandomString();
     urlDatabase[random] = req.body.longURL;  
-    res.redirect(`/urls/${random}`);
+    res.redirect("/urls/" + random);
 });
 
 // Show
@@ -49,21 +51,21 @@ app.get("/urls/:id", (req, res) => {
     res.render("urls_show", templateVars);
 });
 
-//Redirect
+// Redirect
 app.get("/u/:shortURL", (req, res) => {
     let shortURL = req.params.shortURL;
     let longURL = urlDatabase[shortURL];
     res.redirect(longURL);
 });
 
-//Delete form
+// Delete form
 app.post("/urls/:id/delete", (req, res) => {
     const shortURL = req.params.id;
     delete urlDatabase[shortURL];
     res.redirect("/urls");
 });
 
-//Update 
+// Update 
 app.post("/urls/:id", (req, res) => {
     const shortURL = req.params.id;
     const longURL = req.body.longURL;
@@ -71,10 +73,7 @@ app.post("/urls/:id", (req, res) => {
     res.redirect("/urls");
 });
 
-app.get("/hello", (req, res) => {
-    res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
+// Start the server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
