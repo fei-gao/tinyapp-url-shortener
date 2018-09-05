@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const generateRandomString = require('./index.js');
 
-const PORT = 8081; // default port 8080
+const PORT = 8080; // default port 8080
 
 // Middleware
 app.set('view engine', 'ejs');
@@ -35,16 +35,19 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+    let cookie = req.cookies;
     let templateVars = { 
-        username: req.cookies["username"],
-        urls: urlDatabase        
+        users: users,
+        cookie: cookie,
+        urls: urlDatabase       
     };
+    console.log("cookie is", cookie, "templateVars is", templateVars);
     res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
     let templateVars = {
-        username: req.cookies["username"]
+        user_id: users[user_id]
     };
     res.render("urls_new", templateVars);
 });
@@ -59,7 +62,7 @@ app.post("/urls", (req, res) => {
 // Show
 app.get("/urls/:id", (req, res) => {
     let templateVars = { 
-        username: req.cookies["username"],
+        user_id: user[user_id],
         shortURL: req.params.id,
         longURL: urlDatabase[req.params.id]
     };
@@ -109,24 +112,25 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    const userId = generateRandomString();
+    const user_id = generateRandomString();
     const userArr = Object.values(users);
     //handle errors
     if(!email || !password){
-        res.send("400 Error: Please enter both email and password")
+         res.status(400).render('register', { Error: "Email or password was not filled."});
     } else if (
         userArr.find(function(user){
             return email == user.email
     })){
-            res.send("400 Error: Email already exists");
+        res.status(400).render('register', { Error: "Email already exists."});
     }
     else {
-    users[userId] = {
-        "Id": userId,
+    users[user_id] = {
+        "user_id": user_id,
         "email": email,
         "password": password
     };
-    res.cookie('userId', userId);
+    res.cookie('user_id', user_id);
+    console.log(users);
     res.redirect("/urls");
     }
 });
