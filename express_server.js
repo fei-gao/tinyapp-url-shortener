@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const generateRandomString = require('./index.js');
 
-const PORT = 8089; // default port 8080
+const PORT = 8080; // default port 8080
 
 // Middleware
 app.set('view engine', 'ejs');
@@ -27,7 +27,7 @@ const users = {
       email: "user2@example.com", 
       password: "dishwasher-funk"
     }
-  }
+  };
 
 // Read 
 app.get("/", (req, res) => {
@@ -50,9 +50,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 // POST
-// req.body returns {"longURL": https://wwww.google.ca}
-// after submiting form, save shortURL and longURL to database
-// and redirect user to /urls/<shortURL> page 
 app.post("/urls", (req, res) => {
     let random = generateRandomString();
     urlDatabase[random] = req.body.longURL;  
@@ -102,16 +99,27 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
     res.clearCookie('username');
     res.redirect("/urls");
-})
+});
 
 // Register
 app.get("/register", (req, res) => {
     res.render("register");
-})
+});
 
 app.post("/register", (req, res) => {
-    res.send("registerred");
-})
+    const email = req.body.email;
+    const password = req.body.password;
+    const userId = generateRandomString();
+    users[userId] = {
+        "Id": userId,
+        "email": email,
+        "password": password
+    };
+    console.log(users);
+    res.cookie('userId', userId);
+    res.redirect("/urls");
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
