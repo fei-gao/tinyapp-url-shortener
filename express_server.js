@@ -52,25 +52,34 @@ app.get("/urls/:id", (req, res) => {
     res.render("urls_show", templateVars);
 });
 
-//Redirect
+// Redirect
 app.get("/u/:shortURL", (req, res) => {
     let shortURL = req.params.shortURL;
     let longURL = urlDatabase[shortURL];
     res.redirect(longURL);
 });
 
-//Delete form
+// Delete form
 app.post("/urls/:id/delete", (req, res) => {
     const shortURL = req.params.id;
     delete urlDatabase[shortURL];
     res.redirect("/urls");
 });
 
-//Update 
+// Update 
 app.post("/urls/:id", (req, res) => {
     const shortURL = req.params.id;
     const longURL = req.body.longURL;
     urlDatabase[shortURL] = longURL;
+    res.redirect("/urls");
+});
+
+// Login 
+app.post("/login", (req, res) => {
+    const username = req.body.username;
+    console.log(req.body);
+    res.cookie('username', username);
+    console.log('Cookies: ', req.cookies);
     res.redirect("/urls");
 });
 
