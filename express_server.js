@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
+const generateRandomString = require('./index.js');
+
 const PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
@@ -28,31 +30,29 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_new");
 });
 
+// req.body returns {"longURL": https://wwww.google.ca}
+// after submiting form, save shortURL and longURL to database
+// and redirect user to /urls/<shortURL> page 
 app.post("/urls", (req, res) => {
     let random = generateRandomString();
-    console.log(random, req.body);
-    urlDatabase[`${random}`] = req.body['longURL'];  // debug statement to see POST parameters
-    console.log(urlDatabase);
+    urlDatabase[random] = req.body["longURL"];  
     res.redirect(`/urls/${random}`);
+});
 
+app.get("/urls/:id", (req, res) => {
+    let templateVars = { 
+        shortURL: req.params.id,
+        longURL: urlDatabase[req.params.id]
+    };
+    res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
     let urlKey = req.params.shortURL;
     let longURL = urlDatabase[urlKey];
-     console.log("longURL is", longURL);
-    res.redirect(`${longURL}`);
-  });
-
-app.get("/urls/:id", (req, res) => {
-    let templateVars = { 
-        shortURL: req.params.id,
-        urls: urlDatabase,
-        longURL: urlDatabase[req.params.id] + req.params.id
-    };
-    res.render("urls_show", templateVars);
+    res.redirect(longURL);
 });
-  
+
 app.get("/hello", (req, res) => {
     res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
@@ -60,7 +60,3 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
-function generateRandomString(){
-    return  Math.random().toString(36).substring(2, 8);
-}
