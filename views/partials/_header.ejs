@@ -8,9 +8,16 @@
 </head>
 <body>
     <h1> Header </h1>
-    <form method="POST" action="/login" >
-        <input type="text" name="username">
-        <input type="submit" value="Submit">
 
-    </form>
+    <% if(username){ %>
     <span> <%= username  %></span>
+    <form method="POST" action="/logout" >
+        <input type="submit" value="Loooogout">
+    </form>
+
+    <% } else{ %>
+        <form method="POST" action="/login" >
+            <input type="text" name="username">
+            <input type="submit" value="Suuubmit">
+        </form>
+    <% } %>
