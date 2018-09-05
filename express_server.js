@@ -16,6 +16,8 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -25,12 +27,18 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-    let templateVars = { urls: urlDatabase };
+    let templateVars = { 
+        username: req.cookies["username"],
+        urls: urlDatabase        
+    };
     res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-    res.render("urls_new");
+    let templateVars = {
+        username: req.cookies["username"]
+    };
+    res.render("urls_new", templateVars);
 });
 
 // POST
@@ -46,6 +54,7 @@ app.post("/urls", (req, res) => {
 // Show
 app.get("/urls/:id", (req, res) => {
     let templateVars = { 
+        username: req.cookies["username"],
         shortURL: req.params.id,
         longURL: urlDatabase[req.params.id]
     };
@@ -81,10 +90,6 @@ app.post("/login", (req, res) => {
     res.cookie('username', username);
     console.log('Cookies: ', req.cookies);
     res.redirect("/urls");
-});
-
-app.get("/hello", (req, res) => {
-    res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.listen(PORT, () => {
