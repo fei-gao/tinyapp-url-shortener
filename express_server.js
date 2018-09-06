@@ -80,7 +80,7 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL);
 });
 
-// Delete form
+// Delete
 app.post("/urls/:id/delete", (req, res) => {
     const shortURL = req.params.id;
     delete urlDatabase[shortURL];
@@ -94,13 +94,6 @@ app.post("/urls/:id", (req, res) => {
     urlDatabase[shortURL] = longURL;
     res.redirect("/urls");
 });
-
-// Login 
-// app.post("/login", (req, res) => {
-//     const username = req.body.username;
-//     res.cookie('username', username);
-//     res.redirect("/urls");
-// });
 
 // Logout
 app.post("/logout", (req, res) => {
@@ -142,7 +135,7 @@ app.post("/register", (req, res) => {
 // Login
 app.get("/login", (req, res) => {
     res.render("login");
-})
+});
 
 // Login
 app.post("/login", (req, res) => {
@@ -153,21 +146,22 @@ app.post("/login", (req, res) => {
     //handle errors
     if(!email || !password){
          res.status(400).send("400 Error: Email or password was not filled.");
-    } else if (
-        userArr.find(function(user){
-            return email == user.email
-    })){
-        res.status(400).send("400 Error: Email already exists. ") 
-    }
-    else {
-    users[user_id] = {
-        "user_id": user_id,
-        "email": email,
-        "password": password
-    };
-    res.cookie('user_id', user_id);
-    console.log(users);
-    res.redirect("/urls");
+    } else {
+        let item = userArr.find(function(user){
+            return email == user.email;  });
+        if (!item){
+            res.status(403).send("403 Error: Email cannot be found");
+        } else if(password !== item.password){
+            res.status(403).send("403 Error: Password does not match");
+        }    
+        else {
+        users[user_id] = {
+            "user_id": user_id
+        };
+        res.cookie('user_id', user_id);
+        console.log(users);
+        res.redirect("/");
+        }
     }
 });
 
