@@ -46,8 +46,10 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+    let cookie = req.cookies;
     let templateVars = {
-        user_id: users[user_id]
+        users: users,
+        cookie: cookie
     };
     res.render("urls_new", templateVars);
 });
@@ -61,8 +63,10 @@ app.post("/urls", (req, res) => {
 
 // Show
 app.get("/urls/:id", (req, res) => {
+    let cookie = req.cookies;
     let templateVars = { 
-        user_id: user[user_id],
+        users: users,
+        cookie: cookie,
         shortURL: req.params.id,
         longURL: urlDatabase[req.params.id]
     };
@@ -92,11 +96,11 @@ app.post("/urls/:id", (req, res) => {
 });
 
 // Login 
-app.post("/login", (req, res) => {
-    const username = req.body.username;
-    res.cookie('username', username);
-    res.redirect("/urls");
-});
+// app.post("/login", (req, res) => {
+//     const username = req.body.username;
+//     res.cookie('username', username);
+//     res.redirect("/urls");
+// });
 
 // Logout
 app.post("/logout", (req, res) => {
@@ -109,19 +113,20 @@ app.get("/register", (req, res) => {
     res.render("register");
 });
 
-app.post("/register", (req, res) => {
+// Login
+app.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const user_id = generateRandomString();
     const userArr = Object.values(users);
     //handle errors
     if(!email || !password){
-         res.status(400).render('register', { Error: "Email or password was not filled."});
+         res.status(400).send("400 Error: Email or password was not filled.");
     } else if (
         userArr.find(function(user){
             return email == user.email
     })){
-        res.status(400).render('register', { Error: "Email already exists."});
+        res.status(400).send("400 Error: Email already exists. ") 
     }
     else {
     users[user_id] = {
@@ -135,6 +140,10 @@ app.post("/register", (req, res) => {
     }
 });
 
+// Login
+app.get("/login", (req, res) => {
+    res.render("login");
+})
 // Start the server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
