@@ -104,7 +104,7 @@ app.post("/urls/:id", (req, res) => {
 
 // Logout
 app.post("/logout", (req, res) => {
-    res.clearCookie('username');
+    res.clearCookie('user_id');
     res.redirect("/urls");
 });
 
@@ -113,8 +113,7 @@ app.get("/register", (req, res) => {
     res.render("register");
 });
 
-// Login
-app.post("/login", (req, res) => {
+app.post("/register", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const user_id = generateRandomString();
@@ -144,6 +143,34 @@ app.post("/login", (req, res) => {
 app.get("/login", (req, res) => {
     res.render("login");
 })
+
+// Login
+app.post("/login", (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    const user_id = generateRandomString();
+    const userArr = Object.values(users);
+    //handle errors
+    if(!email || !password){
+         res.status(400).send("400 Error: Email or password was not filled.");
+    } else if (
+        userArr.find(function(user){
+            return email == user.email
+    })){
+        res.status(400).send("400 Error: Email already exists. ") 
+    }
+    else {
+    users[user_id] = {
+        "user_id": user_id,
+        "email": email,
+        "password": password
+    };
+    res.cookie('user_id', user_id);
+    console.log(users);
+    res.redirect("/urls");
+    }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
