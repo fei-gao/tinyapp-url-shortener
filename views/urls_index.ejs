@@ -1,8 +1,13 @@
 <% include ./partials/_header %>
 <h2> Index Page </h2>
     <ul>
+  <h3> All Shortened URLs </h3>
+      <% for (let key in urlDatabase){ %>
+      <li>  <%= key %>  </li>
+      <% } %>
        <li> 
          
+        <h3> Your URL </h3>
           <span> <%= urls.shortURL %> </span>  
           <a href=" <%= urls.longURL %> "> <%= urls.longURL %> </a>
           <a href="/urls/<%= urls.shortURL %>"> Edit </a> 

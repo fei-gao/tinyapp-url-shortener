@@ -52,6 +52,7 @@ app.get("/urls", (req, res) => {
                 users: users,
                 cookie: cookie,
                 urls: userURLs,
+                urlDatabase: urlDatabase
             };
             console.log(".get(./urls) templateVars is", templateVars);
             res.render("urls_index", templateVars);
