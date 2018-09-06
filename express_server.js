@@ -12,8 +12,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+      "userID": "userRandomID",
+      "longURL": "http://www.lighthouselabs.ca"
+    },
+  "9sm5xK": {
+      "userID": "user2RandomID",
+      "longURL": "http://www.google.com"
+    }
 };
 
 const users = { 
@@ -41,7 +47,7 @@ app.get("/urls", (req, res) => {
         cookie: cookie,
         urls: urlDatabase       
     };
-    // console.log("cookie is", cookie, "templateVars is", templateVars);
+    console.log("cookie is", cookie, "templateVars is", templateVars);
     res.render("urls_index", templateVars);
 });
 
@@ -60,17 +66,17 @@ app.get("/urls/new", (req, res) => {
 
 // POST
 app.post("/urls", (req, res) => {
-    let random = generateRandomString();
-    // urlDatabase[random] = req.body.longURL; 
+    let shortURL = generateRandomString();
+    // urlDatabase[shortURL] = req.body.longURL; 
     const cookie = req.cookies;
     const userID = cookie.user_id;
    
-    urlDatabase[random] = {
+    urlDatabase[shortURL] = {
         "userID": userID,
         "longURL": req.body.longURL
     };
-    console.log(urlDatabase); 
-    res.redirect("/urls/" + random);
+    // console.log("urlDatabase:" , urlDatabase); 
+    res.redirect("/urls/" + shortURL);
 });
 
 // Show
@@ -80,7 +86,7 @@ app.get("/urls/:id", (req, res) => {
         users: users,
         cookie: cookie,
         shortURL: req.params.id,
-        longURL: urlDatabase[req.params.id]
+        longURL: urlDatabase[req.params.id].longURL
     };
     res.render("urls_show", templateVars);
 });
@@ -95,7 +101,9 @@ app.get("/u/:shortURL", (req, res) => {
 // Delete
 app.post("/urls/:id/delete", (req, res) => {
     const shortURL = req.params.id;
-    delete urlDatabase[shortURL];
+    if(req.cookies.user_id === urlDatabase[shortURL].userID){
+        delete urlDatabase[shortURL];
+    }
     res.redirect("/urls");
 });
 
@@ -103,8 +111,9 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
     const shortURL = req.params.id;
     const longURL = req.body.longURL;
-
-    urlDatabase[shortURL] = longURL;
+    if(req.cookies.user_id === urlDatabase[shortURL].userID){
+    urlDatabase[shortURL].longURL = longURL;
+    }
     res.redirect("/urls");
 });
 
@@ -140,7 +149,7 @@ app.post("/register", (req, res) => {
         "password": password
     };
     res.cookie('user_id', user_id);
-    console.log(users);
+    // console.log(users);
     res.redirect("/urls");
     }
 });
