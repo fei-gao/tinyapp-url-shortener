@@ -8,9 +8,10 @@
 </head>
 <body>
 
-        <a href="/register"> Register </a>
+    <a href="/register"> Register </a>
     <a href="/login"> Login </a>
 
+    <div>
     <% if(cookie.user_id){ %>
        <span> <%= cookie["user_id"] %> </span>  
        <span> <%= users[cookie["user_id"]].email %> </span> 
@@ -20,3 +21,4 @@
 
     <% } %>
 
+</div>
