@@ -13,7 +13,7 @@
 
     <div>
     <% if(cookie.user_id){ %>
-       <span> <%= cookie["user_id"] %> </span>  
+       <span> <%= cookie.user_id %> </span>  
        <span> <%= users[cookie["user_id"]].email %> </span> 
     <form method="POST" action="/logout" style="display: inline">
         <input type="submit" value="Logout">

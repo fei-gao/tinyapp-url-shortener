@@ -51,7 +51,11 @@ app.get("/urls/new", (req, res) => {
         users: users,
         cookie: cookie
     };
+    if(cookie.user_id){
     res.render("urls_new", templateVars);
+    } else {
+    res.redirect("/login");
+    }
 });
 
 // POST
