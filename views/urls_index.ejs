@@ -1,19 +1,18 @@
 <% include ./partials/_header %>
 <h2> Index Page </h2>
     <ul>
-      <% keys = Object.keys(urls) %>     
-        <% keys.forEach(function(key) { %>
        <li> 
-        <%= key %>
-          <a href=" <%= urls[key].longURL %> "> <%= urls[key].longURL %> </a> 
-          <a href="/urls/<%= key %>"> Edit </a> 
+         
+          <span> <%= urls.shortURL %> </span>  
+          <a href=" <%= urls.longURL %> "> <%= urls.longURL %> </a>
+          <a href="/urls/<%= urls.shortURL %>"> Edit </a> 
 
-          <form method="POST" action="/urls/<%= key %>/delete" style="display: inline">
+
+          <form method="POST" action="/urls/<%= urls.longURL %>/delete" style="display: inline">
           <input type="submit" value="Delete"> 
         </form>
        </li>
        <br>
-        <% }); %>
     </ul>
     <a href="/urls/new"> Shorten a new URL </a>
 </body>

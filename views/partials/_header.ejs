@@ -8,17 +8,19 @@
 </head>
 <body>
 
-    <a href="/register"> Register </a>
-    <a href="/login"> Login </a>
-
+   
     <div>
     <% if(cookie.user_id){ %>
        <span> <%= cookie.user_id %> </span>  
-       <span> <%= users[cookie.user_id].email %> </span> 
+       <span> <%= users[urls.userID].email %> </span> 
     <form method="POST" action="/logout" style="display: inline">
         <input type="submit" value="Logout">
     </form>
 
-    <% } %>
+    <% } else { %>
+        <a href="/register"> Register </a>
+        <a href="/login"> Login </a>
+    
+   <% } %>
 
 </div>

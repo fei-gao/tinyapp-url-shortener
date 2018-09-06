@@ -42,20 +42,30 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
     let cookie = req.cookies;
-    let templateVars = { 
-        users: users,
-        cookie: cookie,
-        urls: urlDatabase       
-    };
-    console.log("cookie is", cookie, "templateVars is", templateVars);
-    res.render("urls_index", templateVars);
+    if (!cookie.user_id){
+        res.send("Need login or register first");
+    } else {
+        const userURLs = urlsForUser("user2RandomID");
+        console.log("id is:", cookie.user_id, "userURLs:", userURLs);
+
+            let templateVars = { 
+                users: users,
+                cookie: cookie,
+                urls: userURLs,
+            };
+            console.log(".get(./urls) templateVars is", templateVars);
+            res.render("urls_index", templateVars);
+            // res.send("index page");
+        };
+    
 });
 
 app.get("/urls/new", (req, res) => {
     let cookie = req.cookies;
     let templateVars = {
         users: users,
-        cookie: cookie
+        cookie: cookie,
+        urls: urlDatabase 
     };
     if(cookie.user_id){
     res.render("urls_new", templateVars);
@@ -67,7 +77,6 @@ app.get("/urls/new", (req, res) => {
 // POST
 app.post("/urls", (req, res) => {
     let shortURL = generateRandomString();
-    // urlDatabase[shortURL] = req.body.longURL; 
     const cookie = req.cookies;
     const userID = cookie.user_id;
    
@@ -75,26 +84,33 @@ app.post("/urls", (req, res) => {
         "userID": userID,
         "longURL": req.body.longURL
     };
-    // console.log("urlDatabase:" , urlDatabase); 
+    console.log("post a new url urlDatabase:" , urlDatabase); 
     res.redirect("/urls/" + shortURL);
 });
 
 // Show
 app.get("/urls/:id", (req, res) => {
     let cookie = req.cookies;
-    let templateVars = { 
-        users: users,
-        cookie: cookie,
-        shortURL: req.params.id,
-        longURL: urlDatabase[req.params.id].longURL
-    };
-    res.render("urls_show", templateVars);
+    let shortURL = req.params.id;
+  
+    if(cookie.user_id != urlDatabase[shortURL].userID){
+        res.redirect("/urls")
+    } else {
+        let templateVars = { 
+            users: users,
+            cookie: cookie,
+            shortURL: req.params.id,
+            longURL: urlDatabase[shortURL].longURL,
+            urls: urlDatabase
+        };
+        res.render("urls_show", templateVars);
+    }
 });
 
 // Redirect
 app.get("/u/:shortURL", (req, res) => {
     let shortURL = req.params.shortURL;
-    let longURL = urlDatabase[shortURL];
+    let longURL = urlDatabase[shortURL].longURL;
     res.redirect(longURL);
 });
 
@@ -104,16 +120,14 @@ app.post("/urls/:id/delete", (req, res) => {
     if(req.cookies.user_id === urlDatabase[shortURL].userID){
         delete urlDatabase[shortURL];
     }
-    res.redirect("/urls");
+        res.redirect("/urls");
 });
 
 // Update 
 app.post("/urls/:id", (req, res) => {
     const shortURL = req.params.id;
     const longURL = req.body.longURL;
-    if(req.cookies.user_id === urlDatabase[shortURL].userID){
     urlDatabase[shortURL].longURL = longURL;
-    }
     res.redirect("/urls");
 });
 
@@ -136,21 +150,22 @@ app.post("/register", (req, res) => {
     //handle errors
     if(!email || !password){
          res.status(400).send("400 Error: Email or password was not filled.");
-    } else if (
-        userArr.find(function(user){
-            return email == user.email
-    })){
-        res.status(400).send("400 Error: Email already exists. ") 
-    }
-    else {
-    users[user_id] = {
-        "user_id": user_id,
-        "email": email,
-        "password": password
-    };
-    res.cookie('user_id', user_id);
-    // console.log(users);
-    res.redirect("/urls");
+    } else {
+        const user = userArr.find(function(u){
+            return email == u.email;
+        }); if (user) {
+            res.status(400).send("400 Error: Email already exists. ") 
+        }        
+        else {
+        users[user_id] = {
+            "user_id": user_id,
+            "email": email,
+            "password": password
+        };
+        res.cookie('user_id', user_id);
+        console.log("register new users:", users);
+        res.redirect("/urls");
+        }
     }
 });
 
@@ -169,20 +184,17 @@ app.post("/login", (req, res) => {
     if(!email || !password){
          res.status(400).send("400 Error: Email or password was not filled.");
     } else {
-        let item = userArr.find(function(user){
-            return email == user.email;  });
-        if (!item){
+        const user = userArr.find(function(u){
+            return email == u.email;  });
+        if (!user){
             res.status(403).send("403 Error: Email cannot be found");
-        } else if(password !== item.password){
+        } else if(password !== user.password){
             res.status(403).send("403 Error: Password does not match");
         }    
         else {
-        users[user_id] = {
-            "user_id": user_id
-        };
         res.cookie('user_id', user_id);
         console.log(users);
-        res.redirect("/");
+        res.redirect("/urls");
         }
     }
 });
@@ -191,3 +203,17 @@ app.post("/login", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+function urlsForUser(id){
+    let URLs = {};
+    for (let key in urlDatabase){
+        if(id === urlDatabase[key].userID){
+            URLs = {
+                "userID": id,
+                "shortURL": key,
+                "longURL": urlDatabase[key].longURL
+            }
+        }
+    }
+    return URLs;
+}
