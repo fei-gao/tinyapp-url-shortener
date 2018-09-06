@@ -41,7 +41,7 @@ app.get("/urls", (req, res) => {
         cookie: cookie,
         urls: urlDatabase       
     };
-    console.log("cookie is", cookie, "templateVars is", templateVars);
+    // console.log("cookie is", cookie, "templateVars is", templateVars);
     res.render("urls_index", templateVars);
 });
 
@@ -61,7 +61,15 @@ app.get("/urls/new", (req, res) => {
 // POST
 app.post("/urls", (req, res) => {
     let random = generateRandomString();
-    urlDatabase[random] = req.body.longURL;  
+    // urlDatabase[random] = req.body.longURL; 
+    const cookie = req.cookies;
+    const userID = cookie.user_id;
+   
+    urlDatabase[random] = {
+        "userID": userID,
+        "longURL": req.body.longURL
+    };
+    console.log(urlDatabase); 
     res.redirect("/urls/" + random);
 });
 
@@ -95,6 +103,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
     const shortURL = req.params.id;
     const longURL = req.body.longURL;
+
     urlDatabase[shortURL] = longURL;
     res.redirect("/urls");
 });
