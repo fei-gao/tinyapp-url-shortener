@@ -45,7 +45,13 @@ app.get("/urls", (req, res) => {
     if (!cookie.user_id){
         res.send("Need login or register first");
     } else {
-        const userURLs = urlsForUser("user2RandomID");
+        const userURLs = urlsForUser(cookie.user_id);
+        if(userURLs==={}){
+            userURLs = {
+                "userID": cookie.user_id 
+            }
+        }
+        console.log("----------", userURLs);
         console.log("id is:", cookie.user_id, "userURLs:", userURLs);
 
             let templateVars = { 
@@ -144,6 +150,7 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+    console.log("*********" , req.body);
     const email = req.body.email;
     const password = req.body.password;
     const user_id = generateRandomString();
@@ -179,7 +186,6 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    const user_id = generateRandomString();
     const userArr = Object.values(users);
     //handle errors
     if(!email || !password){
@@ -193,7 +199,7 @@ app.post("/login", (req, res) => {
             res.status(403).send("403 Error: Password does not match");
         }    
         else {
-        res.cookie('user_id', user_id);
+        res.cookie('user_id', user.user_id);
         console.log(users);
         res.redirect("/urls");
         }
