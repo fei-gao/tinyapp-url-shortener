@@ -2,12 +2,12 @@
 
 <h2>Show Page</h2>
     
-         <h3>Short URL: <%= shortURL %> </h3>
-         
-         <form method="POST" action="/urls/<%= shortURL %>">
+    
+          <form method="POST" action="/urls/<%= shortURL %>">
             <input type="text" id="longURL" name="longURL" value=" <%= longURL %> ">
             <input type="submit" value="Update">
           </form>
           <div><a href="/urls"> Back to Index Page </a></div>
+    
 </body>
 </html>

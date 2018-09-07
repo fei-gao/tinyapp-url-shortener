@@ -10,60 +10,61 @@ const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
-    name: 'session',
-    keys: ['fei-gao'],
-    maxAge: 24 * 60 * 60 * 1000,
+  name: 'session',
+  keys: ['fei-gao'],
+  maxAge: 24 * 60 * 60 * 1000,
 }));
 
 const urlDatabase = {
-    "b2xVn2": {
-        "userID": "userRandomID",
-        "longURL": "http://www.lighthouselabs.ca"
-    },
-    "9sm5xK": {
-        "userID": "user2RandomID",
-        "longURL": "http://www.google.com"
+  "b2xVn2": {
+    "userID": "userRandomID",
+    "longURL": "http://www.lighthouselabs.ca"
+},
+  "9sm5xK": {
+    "userID": "user2RandomID",
+    "longURL": "http://www.google.com"
 
-    };
+ }
+}
 
-    const users = {
-        "userRandomID": {
-            user_id: "userRandomID",
-            email: "user@example.com",
-            hashedPassword: bcrypt.hashSync('purple-monkey-dinosaur', 10)
-        },
-        "user2RandomID": {
-            user_id: "user2RandomID",
-            email: "user2@example.com",
-            hashedPassword: bcrypt.hashSync('dishwasher-funk', 10)
-        }
-    };
+let users = {
+ "userRandomID": {
+    user_id: "userRandomID",
+    email: "user@example.com",
+    hashedPassword: bcrypt.hashSync('purple-monkey-dinosaur', 10)
+  },
+ "user2RandomID": {
+    user_id: "user2RandomID",
+    email: "user2@example.com",
+    hashedPassword: bcrypt.hashSync('dishwasher-funk', 10)
+ }
+};
 
-    // Helper functions
-    function generateRandomString(){
-        return  Math.random().toString(20).substring(2, 8);
+// Helper functions
+function generateRandomString(){
+    return  Math.random().toString(20).substring(2, 8);
 }
 
 function urlsForUser(id) {
-    let URLs = {};
-    for (let key in urlDatabase) {
-        if (id === urlDatabase[key].userID) {
-            URLs[key] = {
-                "userID": id,
-                "longURL": urlDatabase[key].longURL
-            }
-        }
+  let URLs = {};
+  for (let key in urlDatabase) {
+     if (id === urlDatabase[key].userID) {
+      URLs[key] = {
+        "userID": id,
+        "longURL": urlDatabase[key].longURL
+      }
     }
-    return URLs;
+ return URLs;
+}
 }
 
 // Read 
 app.get("/", (req, res) => {
-    if (req.session.user_id) {
-        res.redirect('/urls');
-    } else {
-        res.redirect('/login');
-    }
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 app.get("/urls", (req, res) => {
@@ -124,9 +125,9 @@ app.get("/urls/:id", (req, res) => {
     let shortURL = req.params.id;
 
     if (!cookie.user_id) {
-        res.render("logInError")
+        res.render("logInError");
     }
-    else if (cookie.user_id != urlDatabase[shortURL].userID) {
+    else if (cookie.user_id !== urlDatabase[shortURL].userID) {
         res.render("notMatchError");
     }
     else {
@@ -153,7 +154,6 @@ app.get("/u/:shortURL", (req, res) => {
     } else {
         res.render("urlNotExist");
     }
-
 });
 
 // Delete
@@ -204,7 +204,6 @@ app.post("/register", (req, res) => {
                 "hashedPassword": hashedPassword
             };
             req.session.user_id = user_id;
-            console.log("register new users:", users);
             res.redirect("/urls");
         }
     }

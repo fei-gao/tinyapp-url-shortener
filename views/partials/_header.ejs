@@ -10,17 +10,20 @@
 <body>
 
     <div>
+        <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
     <% if(cookie.user_id){ %>
-       <span> Hello </span>  
-       <span> <%= users[cookie.user_id].email %> </span> 
-    <form method="POST" action="/logout" style="display: inline">
-        <input type="submit" value="Logout">
-    </form>
-
+            <span> Hello </span>  
+            <span> <%= users[cookie.user_id].email %> </span> 
+            <form method="POST" action="/logout" style="display: inline">
+             <input type="submit" value="Logout">
+            </form>
+    
+    
     <% } else { %>
         <a href="/register"> Register </a>
         <a href="/login"> Login </a>
-    
-   <% } %>
+    </nav>
+        
+        <% } %>
 
 </div>
