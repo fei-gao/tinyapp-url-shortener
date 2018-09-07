@@ -1,20 +1,26 @@
 <% include ./partials/_header %>
 <h2> Index Page </h2>
     <ul>
-  <h3> All Shortened URLs </h3>
+  <h3> All URLs </h3>
       <% for (let key in urlDatabase){ %>
       <li>  <%= key %> ----> <%= urlDatabase[key].longURL %> </li>
       <% } %>
          
         <h3> Your URL </h3>
-        <% if(urls.shortURL){ %>
-          <span> <%= urls.shortURL %> </span>  
-          <a href=" <%= urls.longURL %> "> <%= urls.longURL %> </a>
-          <a href="/urls/<%= urls.shortURL %>"> Edit </a> 
+        <% let keyArr = Object.keys(urls) %>
+        <% if(keyArr.length !== 0){ %>
+        <%  keyArr.forEach(function (key){ %>
+          <div>
+          <span> <%= key %> ----> </span>  
+          <a href=" <%= urls[key].longURL %> "> <%= urls[key].longURL %> </a>
+          <button> <a href="/urls/<%= key %>"> Edit </a> </button>  
           
-          <form method="POST" action="/urls/<%= urls.shortURL %>/delete" style="display: inline">
+          <form method="POST" action="/urls/<%= key %>/delete" style="display: inline">
             <input type="submit" value="Delete"> 
           </form>
+          </div>
+          <% }) %>
+         
           <% } %>
           <% if(!cookie.user_id){ %>
             <span> Error: Need to register or log in.</span>
