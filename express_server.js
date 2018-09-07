@@ -109,7 +109,7 @@ app.post("/urls", (req, res) => {
 
 // Show
 app.get("/urls/:id", (req, res) => {
-    let cookie = req.sessions;
+    let cookie = req.session;
     let shortURL = req.params.id;
   
     if(cookie.user_id != urlDatabase[shortURL].userID){
