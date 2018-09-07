@@ -5,18 +5,20 @@
       <% for (let key in urlDatabase){ %>
       <li>  <%= key %>  </li>
       <% } %>
-       <li> 
          
         <h3> Your URL </h3>
+        <% if(urls.shortURL){ %>
           <span> <%= urls.shortURL %> </span>  
           <a href=" <%= urls.longURL %> "> <%= urls.longURL %> </a>
           <a href="/urls/<%= urls.shortURL %>"> Edit </a> 
-
-
-          <form method="POST" action="/urls/<%= urls.longURL %>/delete" style="display: inline">
-          <input type="submit" value="Delete"> 
-        </form>
-       </li>
+          
+          <form method="POST" action="/urls/<%= urls.shortURL %>/delete" style="display: inline">
+            <input type="submit" value="Delete"> 
+          </form>
+          <% } %>
+          <% if(!cookie.user_id){ %>
+            <span> Error: Need to register or log in.</span>
+            <% } %>
        <br>
     </ul>
     <a href="/urls/new"> Shorten a new URL </a>
