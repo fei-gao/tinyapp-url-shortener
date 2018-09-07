@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
 const generateRandomString = require('./index.js');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
 const PORT = 8080; // default port 8080
@@ -10,7 +10,13 @@ const PORT = 8080; // default port 8080
 // Middleware
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+    name: 'session',
+    keys: ['fei-gao'],
+  
+    // Cookie Options
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }));
 
 const urlDatabase = {
   "b2xVn2": {
@@ -27,12 +33,14 @@ const users = {
     "userRandomID": {
       user_id: "userRandomID", 
       email: "user@example.com", 
-      password: "purple-monkey-dinosaur"
+      password: "purple-monkey-dinosaur",
+      hashedPassword: '$2b$10$7R3Fa4frjhNrpL.VQg0bSu.DX/cI7EI62TZrI82buGPnBdP1hCoP.'
     },
    "user2RandomID": {
       user_id: "user2RandomID", 
       email: "user2@example.com", 
-      password: "dishwasher-funk"
+      password: "dishwasher-funk",
+      hashedPassword: '$2b$10$sD3t2CDAtHdccP1/GrVoNOjOwNDAZQzVJ7oCxhyqT.dk4ejI2fOCC'
     }
   };
 
@@ -42,7 +50,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-    let cookie = req.cookies;
+    let cookie = req.session;
     if (!cookie.user_id){
         res.send("Need login or register first");
     } else {
@@ -69,7 +77,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-    let cookie = req.cookies;
+    let cookie = req.session;
     let userURLs = {
         "userID": cookie.user_id 
     }
@@ -88,7 +96,7 @@ app.get("/urls/new", (req, res) => {
 // POST
 app.post("/urls", (req, res) => {
     let shortURL = generateRandomString();
-    const cookie = req.cookies;
+    const cookie = req.session;
     const userID = cookie.user_id;
    
     urlDatabase[shortURL] = {
@@ -101,7 +109,7 @@ app.post("/urls", (req, res) => {
 
 // Show
 app.get("/urls/:id", (req, res) => {
-    let cookie = req.cookies;
+    let cookie = req.sessions;
     let shortURL = req.params.id;
   
     if(cookie.user_id != urlDatabase[shortURL].userID){
@@ -131,7 +139,7 @@ app.get("/u/:shortURL", (req, res) => {
 // Delete
 app.post("/urls/:id/delete", (req, res) => {
     const shortURL = req.params.id;
-    if(req.cookies.user_id === urlDatabase[shortURL].userID){
+    if(req.session.user_id === urlDatabase[shortURL].userID){
         delete urlDatabase[shortURL];
     }
         res.redirect("/urls");
@@ -147,7 +155,7 @@ app.post("/urls/:id", (req, res) => {
 
 // Logout
 app.post("/logout", (req, res) => {
-    res.clearCookie('user_id');
+    delete req.session.user_id;
     res.redirect("/urls");
 });
 
@@ -178,7 +186,7 @@ app.post("/register", (req, res) => {
             "email": email,
             "hashedPassword": hashedPassword
         };
-        res.cookie('user_id', user_id);
+        req.session.user_id = user_id;
         console.log("register new users:", users);
         res.redirect("/urls");
         }
@@ -207,7 +215,7 @@ app.post("/login", (req, res) => {
             res.status(403).send("403 Error: Password does not match");
         }    
         else {
-        res.cookie('user_id', user.user_id);
+        req.session.user_id = user.user_id;
         console.log(users);
         res.redirect("/urls");
         }
@@ -233,3 +241,4 @@ function urlsForUser(id){
     }
     return URLs;
 }
+
