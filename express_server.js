@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const generateRandomString = require('./index.js');
+const bcrypt = require('bcrypt');
 
 const PORT = 8080; // default port 8080
 
@@ -159,6 +160,7 @@ app.post("/register", (req, res) => {
     // console.log("*********" , req.body);
     const email = req.body.email;
     const password = req.body.password;
+    const hashedPassword = bcrypt.hashSync(password, 10);
     const user_id = generateRandomString();
     const userArr = Object.values(users);
     //handle errors
@@ -174,10 +176,10 @@ app.post("/register", (req, res) => {
         users[user_id] = {
             "user_id": user_id,
             "email": email,
-            "password": password
+            "hashedPassword": hashedPassword
         };
         res.cookie('user_id', user_id);
-        // console.log("register new users:", users);
+        console.log("register new users:", users);
         res.redirect("/urls");
         }
     }
@@ -201,12 +203,12 @@ app.post("/login", (req, res) => {
             return email == u.email;  });
         if (!user){
             res.status(403).send("403 Error: Email cannot be found");
-        } else if(password !== user.password){
+        } else if(!bcrypt.compareSync(password, user.hashedPassword)){
             res.status(403).send("403 Error: Password does not match");
         }    
         else {
         res.cookie('user_id', user.user_id);
-        // console.log(users);
+        console.log(users);
         res.redirect("/urls");
         }
     }
