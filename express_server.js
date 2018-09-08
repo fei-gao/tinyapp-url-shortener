@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
 // Middleware
 app.set('view engine', 'ejs');
@@ -19,13 +19,13 @@ const urlDatabase = {
   "b2xVn2": {
     "userID": "userRandomID",
     "longURL": "http://www.lighthouselabs.ca"
-},
+ },
   "9sm5xK": {
     "userID": "user2RandomID",
     "longURL": "http://www.google.com"
 
  }
-}
+};
 
 let users = {
  "userRandomID": {
@@ -47,16 +47,17 @@ function generateRandomString(){
 
 function urlsForUser(id) {
   let URLs = {};
-  for (let key in urlDatabase) {
-     if (id === urlDatabase[key].userID) {
-      URLs[key] = {
-        "userID": id,
-        "longURL": urlDatabase[key].longURL
-      }
-    }
+    Object.keys(urlDatabase).forEach((key) => {
+         if (id === urlDatabase[key].userID) {
+          URLs[key] = {
+            "userID": id,
+            "longURL": urlDatabase[key].longURL
+          }
+        }
+    })
  return URLs;
 }
-}
+
 
 // Read 
 app.get("/", (req, res) => {
@@ -78,12 +79,17 @@ app.get("/urls", (req, res) => {
         };
     } else {
         let userURLs = urlsForUser(cookie.user_id);
+        console.log("****id", cookie.user_id);
+        console.log("=====userURLs", userURLs);
         let templateVars = {
             users: users,
             cookie: cookie,
             urls: userURLs,
             urlDatabase: urlDatabase
         };
+        console.log("________", templateVars.urlDatabase);
+        console.log("----------", templateVars.urls);
+        console.log("templateVar: ", templateVars);
         res.render("urls_index", templateVars);
     };
 
@@ -139,7 +145,6 @@ app.get("/urls/:id", (req, res) => {
             cookie: cookie,
             shortURL: req.params.id,
             longURL: urlDatabase[shortURL].longURL,
-            // urls: userURLs
         };
         res.render("urls_show", templateVars);
     }
