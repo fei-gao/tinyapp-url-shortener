@@ -3,7 +3,8 @@
     <ul>
   <h3> All URLs </h3>
       <% for (let key in urlDatabase){ %>
-      <li>  <%= key %> ----> <%= urlDatabase[key].longURL %> </li>
+      <li><a href="/u/<%= key %>"> <%= key %></a>  ----> 
+        <a href="<%= urlDatabase[key].longURL %>"><%= urlDatabase[key].longURL %></a> </li>
       <% } %>
          
         <h3> Your URL </h3>

@@ -23,7 +23,6 @@ const urlDatabase = {
   "9sm5xK": {
     "userID": "user2RandomID",
     "longURL": "http://www.google.com"
-
  }
 };
 
@@ -77,6 +76,7 @@ app.get("/urls", (req, res) => {
             urls: '',
             urlDatabase: urlDatabase
         };
+        res.render("urls_index", templateVars);
     } else {
         let userURLs = urlsForUser(cookie.user_id);
         console.log("****id", cookie.user_id);
@@ -178,8 +178,10 @@ app.post("/urls/:id", (req, res) => {
 
 // Logout
 app.post("/logout", (req, res) => {
-    delete req.session.user_id;
-    res.redirect("/urls");
+    // delete req.session.user_id;
+    req.session = null;
+    // req.session.destroy();
+    res.redirect("/login");
 });
 
 // Register
