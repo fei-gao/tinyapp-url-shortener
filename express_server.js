@@ -47,15 +47,15 @@ function generateRandomString(){
 }
 
 function urlsForUser(id) {
-  let URLs = {};
+  const URLs = {};
   for (let key in urlDatabase){
          if (id === urlDatabase[key].userID) {
           URLs[key] = {
             "userID": id,
             "longURL": urlDatabase[key].longURL
           }
-        }
-    }
+         }
+  }
     return URLs;
 }
 
@@ -87,11 +87,11 @@ function findUser(users, email){
 
 // Read 
 app.get("/", (req, res) => {
-  if (req.session.user_id) {
-    res.redirect('/urls');
-  } else {
-    res.redirect('/login');
-  }
+    if (req.session.user_id) {
+        res.redirect('/urls');
+    } else {
+        res.redirect('/login');
+    }
 });
 
 app.get("/urls", (req, res) => {
@@ -164,9 +164,9 @@ app.get("/urls/:id", (req, res) => {
     else if (!urlDatabase.hasOwnProperty(shortURL)){
         res.render("urlNotExist");
     } else{
-        let userURLs = {
-            "userID": cookie.user_id
-        }
+        // let userURLs = {
+        //     "userID": cookie.user_id
+        // }
         let templateVars = {
             users: users,
             cookie: cookie,
@@ -203,70 +203,71 @@ app.put("/urls/:id", (req, res) => {
     res.redirect("/urls");
 });
 
-// Logout
-app.post("/logout", (req, res) => {
-    req.session = null;
-    res.redirect("/login");
-});
 
 // Register
 app.get("/register", (req, res) => {
-    res.render("register");
+  res.render("register");
 });
 
 app.post("/register", (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
-    const hashedPassword = bcrypt.hashSync(password, 10);
+  const email = req.body.email;
+  const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
     const user_id = generateRandomString();
     const userArr = Object.values(users);
     //handle errors
     if (!email || !password) {
-        res.status(400).send("400 Error: Email or password was not filled.");
+      res.status(400).send("400 Error: Email or password was not filled.");
     } else {
-        const user = userArr.find(function (u) {
-            return email == u.email;
+      const user = userArr.find(function (u) {
+        return email == u.email;
         }); if (user) {
-            res.status(400).send("400 Error: Email already exists. ")
+          res.status(400).send("400 Error: Email already exists. ")
         }
         else {
-            users[user_id] = {
-                "user_id": user_id,
-                "email": email,
-                "hashedPassword": hashedPassword
+          users[user_id] = {
+            "user_id": user_id,
+            "email": email,
+            "hashedPassword": hashedPassword
             };
             req.session.user_id = user_id;
             res.redirect("/urls");
         }
-    }
-});
+      }
+    });
 
-// Login
-app.get("/login", (req, res) => {
-    if (req.session.user_id) {
+    // Login
+    app.get("/login", (req, res) => {
+      if (req.session.user_id) {
         res.redirect('/urls');
-    } else {
+      } else {
         res.render('login');
-    }
+      }
 });
 
 // Login
 app.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-  
+    
     let status = checkLogInStatus(email, password, users);
     if(status.logInStatus !== "Login successfully"){
         let templateVars = {
             status: status
-        };
+          };
         res.render("logInError", templateVars);
-    } else {
+      } else {
         const user = findUser(users, email);
         req.session.user_id = user.user_id;
         res.redirect("/urls");
-    }
-            
+      }
+      
+    });
+
+// Logout
+app.post("/logout", (req, res) => {
+    req.session = null;
+    res.redirect("/login");
 });
 
 // Start the server
