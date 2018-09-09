@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-// const methodOverride = require('method-override');
+const methodOverride = require('method-override');
 
 const PORT = 8080;
 
@@ -15,7 +15,7 @@ app.use(cookieSession({
   keys: ['lighthouse-labs'],
   maxAge: 24 * 60 * 60 * 1000,
 }));
-// app.use(methodOverride('_method'));
+app.use(methodOverride('_method'));
 
 const urlDatabase = {
   "b2xVn2": {
@@ -49,7 +49,6 @@ function generateRandomString(){
 function urlsForUser(id) {
   let URLs = {};
   for (let key in urlDatabase){
-    // Object.keys(urlDatabase).forEach((key) => {
          if (id === urlDatabase[key].userID) {
           URLs[key] = {
             "userID": id,
@@ -190,14 +189,14 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 // Delete
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id", (req, res) => {
     const shortURL = req.params.id;
     delete urlDatabase[shortURL];
     res.redirect("/urls");
 });
 
 // Update 
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
     const shortURL = req.params.id;
     const longURL = req.body.longURL;
     urlDatabase[shortURL].longURL = longURL;

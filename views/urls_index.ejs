@@ -16,7 +16,7 @@
           <a href=" <%= urls[key].longURL %> "> <%= urls[key].longURL %> </a>
           <button> <a href="/urls/<%= key %>"> Edit </a> </button>  
           
-          <form method="POST" action="/urls/<%= key %>/delete" style="display: inline">
+          <form method="POST" action="/urls/<%= key %>?_method=DELETE" style="display: inline">
             <input type="submit" value="Delete"> 
           </form>
           </div>
