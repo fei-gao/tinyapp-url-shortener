@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+// const methodOverride = require('method-override');
 
 const PORT = 8080;
 
@@ -14,6 +15,7 @@ app.use(cookieSession({
   keys: ['lighthouse-labs'],
   maxAge: 24 * 60 * 60 * 1000,
 }));
+// app.use(methodOverride('_method'));
 
 const urlDatabase = {
   "b2xVn2": {
@@ -84,7 +86,6 @@ function findUser(users, email){
     return user;
 }
 
-
 // Read 
 app.get("/", (req, res) => {
   if (req.session.user_id) {
@@ -106,17 +107,12 @@ app.get("/urls", (req, res) => {
         res.render("urls_index", templateVars);
     } else {
         let userURLs = urlsForUser(cookie.user_id);
-        console.log("****id", cookie.user_id);
-        console.log("=====userURLs", userURLs);
         let templateVars = {
             users: users,
             cookie: cookie,
             urls: userURLs,
             urlDatabase: urlDatabase
         };
-        console.log("________", templateVars.urlDatabase);
-        console.log("----------", templateVars.urls);
-        console.log("templateVar: ", templateVars);
         res.render("urls_index", templateVars);
     };
 
@@ -144,12 +140,12 @@ app.post("/urls", (req, res) => {
     let shortURL = generateRandomString();
     const cookie = req.session;
     const userID = cookie.user_id;
-    if (!cookie){
-    urlDatabase[shortURL] = {
-        "userID": userID,
-        "longURL": req.body.longURL
-    };
-    res.redirect("/urls/" + shortURL);
+    if (cookie.user_id){
+        urlDatabase[shortURL] = {
+            "userID": userID,
+            "longURL": req.body.longURL
+        };
+        res.redirect("/urls/" + shortURL);
     } else {
         res.redirect("/urls");
     }
