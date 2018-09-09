@@ -12,7 +12,7 @@
         <% if(keyArr.length !== 0){ %>
         <%  keyArr.forEach(function (key){ %>
           <div>
-          <span> <%= key %> ----> </span>  
+          <span> <a href="/urls/<%= key %>"><%= key %></a> ----> </span>  
           <a href=" <%= urls[key].longURL %> "> <%= urls[key].longURL %> </a>
           <button> <a href="/urls/<%= key %>"> Edit </a> </button>  
           
@@ -27,7 +27,8 @@
             <span> Error: Need to register or log in.</span>
             <% } %>
        <br>
+       <a href="/urls/new"> Shorten a new URL </a>
     </ul>
-    <a href="/urls/new"> Shorten a new URL </a>
+    
 </body>
 </html>

@@ -7,8 +7,14 @@
     <title>Document</title>
 </head>
 <body>
-    <h2> User Error: need to login or register to use shorten url service </h2>
-    <a href="/register"> Register </a>
-    <a href="/login"> Login </a>
+        <div>
+            <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+                <a href="/register"> Register </a>
+                <a href="/login"> Login </a>
+            </nav>
+        </div>
+
+    <h2> <%= status.logInStatus %> </h2>
+
 </body>
 </html>

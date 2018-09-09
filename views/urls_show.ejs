@@ -4,6 +4,9 @@
     
     
           <form method="POST" action="/urls/<%= shortURL %>">
+           <div>
+            <a href="/urls/<%= shortURL %>"> <%= shortURL %> </a>
+           </div> 
             <input type="text" id="longURL" name="longURL" value=" <%= longURL %> ">
             <input type="submit" value="Update">
           </form>

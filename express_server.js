@@ -11,7 +11,7 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieSession({
   name: 'session',
-  keys: ['fei-gao'],
+  keys: ['lighthouse-labs'],
   maxAge: 24 * 60 * 60 * 1000,
 }));
 
@@ -30,12 +30,12 @@ let users = {
  "userRandomID": {
     user_id: "userRandomID",
     email: "user@example.com",
-    hashedPassword: bcrypt.hashSync('purple-monkey-dinosaur', 10)
+    hashedPassword: bcrypt.hashSync('1', 10)
   },
  "user2RandomID": {
     user_id: "user2RandomID",
     email: "user2@example.com",
-    hashedPassword: bcrypt.hashSync('dishwasher-funk', 10)
+    hashedPassword: bcrypt.hashSync('2', 10)
  }
 };
 
@@ -46,15 +46,42 @@ function generateRandomString(){
 
 function urlsForUser(id) {
   let URLs = {};
-    Object.keys(urlDatabase).forEach((key) => {
+  for (let key in urlDatabase){
+    // Object.keys(urlDatabase).forEach((key) => {
          if (id === urlDatabase[key].userID) {
           URLs[key] = {
             "userID": id,
             "longURL": urlDatabase[key].longURL
           }
         }
-    })
- return URLs;
+    }
+    return URLs;
+}
+
+function checkLogInStatus(email, password, users){
+    if (!email || !password) {
+        return { logInStatus: "400 Error: Email or password was not filled."}
+    } else {
+        const userArr = Object.values(users);
+        const user = userArr.find(function (u) {
+            return email == u.email;
+        });
+        if (!user) {
+            return {logInStatus: "403 Error: Email cannot be found"}
+        } else if (!bcrypt.compareSync(password, user.hashedPassword)) {
+            return {logInStatus: "403 Error: Password does not match"}
+        } else {
+            return {logInStatus: "Login successfully"}
+        }
+    }
+}   
+
+function findUser(users, email){
+    const userArr = Object.values(users);
+    const user = userArr.find(function (u) {
+      return email == u.email;
+    });
+    return user;
 }
 
 
@@ -117,12 +144,15 @@ app.post("/urls", (req, res) => {
     let shortURL = generateRandomString();
     const cookie = req.session;
     const userID = cookie.user_id;
-
+    if (!cookie){
     urlDatabase[shortURL] = {
         "userID": userID,
         "longURL": req.body.longURL
     };
     res.redirect("/urls/" + shortURL);
+    } else {
+        res.redirect("/urls");
+    }
 });
 
 // Show
@@ -136,7 +166,9 @@ app.get("/urls/:id", (req, res) => {
     else if (cookie.user_id !== urlDatabase[shortURL].userID) {
         res.render("notMatchError");
     }
-    else {
+    else if (!urlDatabase.hasOwnProperty(shortURL)){
+        res.render("urlNotExist");
+    } else{
         let userURLs = {
             "userID": cookie.user_id
         }
@@ -178,9 +210,7 @@ app.post("/urls/:id", (req, res) => {
 
 // Logout
 app.post("/logout", (req, res) => {
-    // delete req.session.user_id;
     req.session = null;
-    // req.session.destroy();
     res.redirect("/login");
 });
 
@@ -229,25 +259,19 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-    const userArr = Object.values(users);
-    //handle errors
-    if (!email || !password) {
-        res.status(400).send("400 Error: Email or password was not filled.");
+  
+    let status = checkLogInStatus(email, password, users);
+    if(status.logInStatus !== "Login successfully"){
+        let templateVars = {
+            status: status
+        };
+        res.render("logInError", templateVars);
     } else {
-        const user = userArr.find(function (u) {
-            return email == u.email;
-        });
-        if (!user) {
-            res.status(403).send("403 Error: Email cannot be found");
-        } else if (!bcrypt.compareSync(password, user.hashedPassword)) {
-            res.status(403).send("403 Error: Password does not match");
-        }
-        else {
-            req.session.user_id = user.user_id;
-            console.log(users);
-            res.redirect("/urls");
-        }
+        const user = findUser(users, email);
+        req.session.user_id = user.user_id;
+        res.redirect("/urls");
     }
+            
 });
 
 // Start the server
