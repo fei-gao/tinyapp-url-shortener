@@ -5,11 +5,12 @@
     
           <form method="POST" action="/urls/<%= shortURL %>?_method=PUT">
            <div>
-            <a href="/urls/<%= shortURL %>"> <%= shortURL %> </a>
+            <a href="/u/<%= shortURL %>"> <%= shortURL %> </a>
            </div> 
             <input type="text" id="longURL" name="longURL" value=" <%= longURL %> ">
             <input type="submit" value="Update">
           </form>
+          
           <div><a href="/urls"> Back to Index Page </a></div>
     
 </body>

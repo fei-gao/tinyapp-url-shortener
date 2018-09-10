@@ -4,7 +4,9 @@
   <h3> All URLs </h3>
       <% for (let key in urlDatabase){ %>
       <li><a href="/u/<%= key %>"> <%= key %></a>  ----> 
-        <a href="<%= urlDatabase[key].longURL %>"><%= urlDatabase[key].longURL %></a> </li>
+        <a href="<%= urlDatabase[key].longURL %>"><%= urlDatabase[key].longURL %></a>
+  
+      </li>
       <% } %>
          
         <h3> Your URL </h3>
@@ -12,14 +14,33 @@
         <% if(keyArr.length !== 0){ %>
         <%  keyArr.forEach(function (key){ %>
           <div>
-          <a href=" <%= key %> "> <%= key %> ----> </a>
-          <a href=" <%= urls[key].longURL %> "> <%= urls[key].longURL %> </a>
-          <button> <a href="/urls/<%= key %>"> Edit </a> </button>  
-          
-          <form method="POST" action="/urls/<%= key %>?_method=DELETE" style="display: inline">
-            <input type="submit" value="Delete"> 
-          </form>
-          </div>
+            <li>
+                <a href="/u/<%= key %> "> <%= key %>  </a>
+                <span>----></span>
+                <a href=" <%= urls[key].longURL %> "> <%= urls[key].longURL %> </a>
+                <span> Total Visits: <%= urlDatabase[key].visit %> </span>
+                <span> Unique Visitors: <%= urlDatabase[key].uniqueVisitors.length %> </span>
+                
+                
+                <button> <a href="/urls/<%= key %>"> Edit </a> </button>  
+                
+                <form method="POST" action="/urls/<%= key %>?_method=DELETE" style="display: inline">
+                  <input type="submit" value="Delete"> 
+                </form>
+            </li>
+         
+        </div>
+
+        <div>
+          <div> Visitor Records:</div>
+          <% for (let visitor in urlDatabase[key].timeVisited){ %>
+            <div>
+              <span> <%= visitor %></span> visited on
+              <span> <%= urlDatabase[key].timeVisited[visitor] %></span>
+            </div>
+          <% } %>
+        </div>
+        
           <% }) %>
          
           <% } %>

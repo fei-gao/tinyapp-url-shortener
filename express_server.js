@@ -14,17 +14,29 @@ app.use(cookieSession({
   name: 'session',
   keys: ['lighthouse-labs'],
   maxAge: 24 * 60 * 60 * 1000,
-}));
+  }
+//   {
+//   name:'visitor',
+//   keys:['visitor'],
+//   maxAge: 12 * 60 * 60 * 1000
+//   }
+));
 app.use(methodOverride('_method'));
 
 const urlDatabase = {
   "b2xVn2": {
     "userID": "userRandomID",
-    "longURL": "http://www.lighthouselabs.ca"
+    "longURL": "http://www.lighthouselabs.ca",
+    "visit": 0,
+    "uniqueVisitors": [],
+    "timeVisited": {}
  },
   "9sm5xK": {
     "userID": "user2RandomID",
-    "longURL": "http://www.google.com"
+    "longURL": "http://www.google.com",
+    "visit": 0,
+    "uniqueVisitors": [],
+    "timeVisited": {}
  }
 };
 
@@ -114,14 +126,13 @@ app.get("/urls", (req, res) => {
         };
         res.render("urls_index", templateVars);
     };
-
 });
 
 app.get("/urls/new", (req, res) => {
     let cookie = req.session;
     let userURLs = {
         "userID": cookie.user_id
-    }
+    };
     let templateVars = {
         users: users,
         cookie: cookie,
@@ -142,7 +153,10 @@ app.post("/urls", (req, res) => {
     if (cookie.user_id){
         urlDatabase[shortURL] = {
             "userID": userID,
-            "longURL": req.body.longURL
+            "longURL": req.body.longURL,
+            "visit": 0,
+            "uniqueVisitors": [],
+            "timeVisited": {}
         };
         res.redirect("/urls/" + shortURL);
     } else {
@@ -164,12 +178,10 @@ app.get("/urls/:id", (req, res) => {
     else if (!urlDatabase.hasOwnProperty(shortURL)){
         res.render("urlNotExist");
     } else{
-        // let userURLs = {
-        //     "userID": cookie.user_id
-        // }
         let templateVars = {
             users: users,
             cookie: cookie,
+            urlDatabase:urlDatabase,
             shortURL: req.params.id,
             longURL: urlDatabase[shortURL].longURL,
         };
@@ -182,6 +194,26 @@ app.get("/u/:shortURL", (req, res) => {
     let shortURL = req.params.shortURL;
     if (urlDatabase.hasOwnProperty(shortURL)) {
         let longURL = urlDatabase[shortURL].longURL;
+        urlDatabase[shortURL].visit += 1;
+        let uniqueVisitors = urlDatabase[shortURL].uniqueVisitors;
+        
+        // get visitor and date
+        let date = new Date().toLocaleString();
+        let visitor_id = generateRandomString();
+        urlDatabase[shortURL].timeVisited[visitor_id] = date;
+        
+        let cookie = req.session;
+        // user has registerred or loged in
+        if(cookie.user_id !== undefined){
+          if(uniqueVisitors.indexOf (cookie.user_id) === -1){
+          urlDatabase[shortURL].uniqueVisitors.push(cookie.user_id);
+          }
+        } 
+        // visitor visits shortURL 
+        else {
+            urlDatabase[shortURL].uniqueVisitors.push(visitor_id);
+        }
+    
         res.redirect(longURL);
     } else {
         res.render("urlNotExist");
