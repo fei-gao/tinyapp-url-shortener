@@ -29,14 +29,16 @@ const urlDatabase = {
     "longURL": "http://www.lighthouselabs.ca",
     "visit": 0,
     "uniqueVisitors": [],
-    "timeVisited": {}
+    "timeVisited": {},
+    "createdAt": "2018-9-1"
  },
   "9sm5xK": {
     "userID": "user2RandomID",
     "longURL": "http://www.google.com",
     "visit": 0,
     "uniqueVisitors": [],
-    "timeVisited": {}
+    "timeVisited": {},
+    "createdAt": "2018-9-2"
  }
 };
 
@@ -97,6 +99,12 @@ function findUser(users, email){
     return user;
 }
 
+function getDate(){
+    const today = new Date();
+    const date  = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    return date;
+}
+
 // Read 
 app.get("/", (req, res) => {
     if (req.session.user_id) {
@@ -150,13 +158,15 @@ app.post("/urls", (req, res) => {
     let shortURL = generateRandomString();
     const cookie = req.session;
     const userID = cookie.user_id;
+    const createdDate = getDate();
     if (cookie.user_id){
         urlDatabase[shortURL] = {
             "userID": userID,
             "longURL": req.body.longURL,
             "visit": 0,
             "uniqueVisitors": [],
-            "timeVisited": {}
+            "timeVisited": {},
+            "createdAt": createdDate
         };
         res.redirect("/urls/" + shortURL);
     } else {

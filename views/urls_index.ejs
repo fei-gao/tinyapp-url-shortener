@@ -9,41 +9,45 @@
       </li>
       <% } %>
          
-        <h3> Your URL </h3>
+        <h3> Your URLs </h3>
         <% let keyArr = Object.keys(urls) %>
         <% if(keyArr.length !== 0){ %>
+          <table class="table">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">short URL</th>
+                  <th scope="col">long URL</th>
+                  <th scope="col">Total Visits</th>
+                  <th scope="col">Unique Visits</th>
+                  <th scope="col">Created At</th>
+                  <th scope="col">Change</th>
+                </tr>
+              </thead>
         <%  keyArr.forEach(function (key){ %>
-          <div>
-            <li>
-                <a href="/u/<%= key %> "> <%= key %>  </a>
-                <span>----></span>
-                <a href=" <%= urls[key].longURL %> "> <%= urls[key].longURL %> </a>
-                <span> Total Visits: <%= urlDatabase[key].visit %> </span>
-                <span> Unique Visitors: <%= urlDatabase[key].uniqueVisitors.length %> </span>
-                
-                
+            <tbody>
+              <tr>
+                <th scope="row"> <a href="/u/<%= key %>"> <%= key %>  </a> </th>
+                <td> <a href=" <%= urls[key].longURL %> "> <%= urls[key].longURL %> </a> </td>
+                <td> <%= urlDatabase[key].visit %> </td>
+                <td> <%= urlDatabase[key].uniqueVisitors.length %> </td>
+                <td> <%= urlDatabase[key].createdAt %> </td>
+                <td>
                 <button> <a href="/urls/<%= key %>"> Edit </a> </button>  
                 
                 <form method="POST" action="/urls/<%= key %>?_method=DELETE" style="display: inline">
                   <input type="submit" value="Delete"> 
                 </form>
-            </li>
-         
-        </div>
-
-        <div>
-          <div> Visitor Records</div>
-          <% for (let visitor in urlDatabase[key].timeVisited){ %>
-            <div>
-              <span> <%= visitor %></span> visited on
-              <span> <%= urlDatabase[key].timeVisited[visitor] %></span>
-            </div>
+                </td>
+                
+              </tr>
+              
+            </tbody>
+            <% }) %>
+          </table>
+          
+          
           <% } %>
-        </div>
         
-          <% }) %>
-         
-          <% } %>
           <% if(!cookie.user_id){ %>
             <span> Error: Need to register or log in.</span>
             <% } %>
