@@ -1,4 +1,6 @@
 <% include ./partials/_header %>
+<div style="padding-left: 50px">
+
 
 <h2>Show Page</h2>
     
@@ -6,12 +8,31 @@
           <form method="POST" action="/urls/<%= shortURL %>?_method=PUT">
            <div>
             <a href="/u/<%= shortURL %>"> <%= shortURL %> </a>
+            <div> Created At: 
+              <strong>
+                  <%= urlDatabase[shortURL].createdAt %>
+              </strong>
+            </div>
+            
+            <div> Total Visits: 
+              <strong>
+                  <%= urlDatabase[shortURL].visit %>
+              </strong>
+            </div>
+            
+            <div> Unique Visits:
+              <strong>
+                <%= urlDatabase[shortURL].uniqueVisitors.length %>
+              </strong>
+            </div>
+
+
            </div> 
             <input type="text" id="longURL" name="longURL" value=" <%= longURL %> ">
             <input type="submit" value="Update">
           </form>
           
           <div><a href="/urls"> Back to Index Page </a></div>
-    
+        </div>
 </body>
 </html>

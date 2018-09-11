@@ -1,5 +1,5 @@
 <% include ./partials/_header %>
-<h2> Index Page </h2>
+<h2 style="padding-left: 40px"> Index Page </h2>
     <ul>
   <h3> All URLs </h3>
       <% for (let key in urlDatabase){ %>
@@ -20,7 +20,7 @@
                   <th scope="col">Total Visits</th>
                   <th scope="col">Unique Visits</th>
                   <th scope="col">Created At</th>
-                  <th scope="col">Change</th>
+                  <th scope="col">Action</th>
                 </tr>
               </thead>
         <%  keyArr.forEach(function (key){ %>
