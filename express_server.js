@@ -15,30 +15,25 @@ app.use(cookieSession({
   keys: ['lighthouse-labs'],
   maxAge: 24 * 60 * 60 * 1000,
   }
-//   {
-//   name:'visitor',
-//   keys:['visitor'],
-//   maxAge: 12 * 60 * 60 * 1000
-//   }
 ));
 app.use(methodOverride('_method'));
 
 const urlDatabase = {
   "b2xVn2": {
-    "userID": "userRandomID",
-    "longURL": "http://www.lighthouselabs.ca",
-    "visit": 0,
-    "uniqueVisitors": [],
-    "timeVisited": {},
-    "createdAt": "2018-9-1"
+    userID: "userRandomID",
+    longURL: "http://www.lighthouselabs.ca",
+    visits: 0,
+    uniqueVisitors: [],
+    timeVisited: {},
+    createdAt: "2018-9-1"
  },
   "9sm5xK": {
-    "userID": "user2RandomID",
-    "longURL": "http://www.google.com",
-    "visit": 0,
-    "uniqueVisitors": [],
-    "timeVisited": {},
-    "createdAt": "2018-9-2"
+    userID: "user2RandomID",
+    longURL: "http://www.google.com",
+    visits: 0,
+    uniqueVisitors: [],
+    timeVisited: {},
+    createdAt: "2018-9-2"
  }
 };
 
@@ -65,8 +60,8 @@ function urlsForUser(id) {
   for (let key in urlDatabase){
          if (id === urlDatabase[key].userID) {
           URLs[key] = {
-            "userID": id,
-            "longURL": urlDatabase[key].longURL
+            userID: id,
+            longURL: urlDatabase[key].longURL
           }
          }
   }
@@ -139,7 +134,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
     let cookie = req.session;
     let userURLs = {
-        "userID": cookie.user_id
+        userID: cookie.user_id
     };
     let templateVars = {
         users: users,
@@ -158,15 +153,16 @@ app.post("/urls", (req, res) => {
     let shortURL = generateRandomString();
     const cookie = req.session;
     const userID = cookie.user_id;
+    const {longURL} = req.body;
     const createdDate = getDate();
     if (cookie.user_id){
         urlDatabase[shortURL] = {
-            "userID": userID,
-            "longURL": req.body.longURL,
-            "visit": 0,
-            "uniqueVisitors": [],
-            "timeVisited": {},
-            "createdAt": createdDate
+            userID,
+            longURL,
+            visits: 0,
+            uniqueVisitors: [],
+            timeVisited: {},
+            createdAt: createdDate
         };
         res.redirect("/urls/" + shortURL);
     } else {
@@ -204,7 +200,7 @@ app.get("/u/:shortURL", (req, res) => {
     let shortURL = req.params.shortURL;
     if (urlDatabase.hasOwnProperty(shortURL)) {
         let longURL = urlDatabase[shortURL].longURL;
-        urlDatabase[shortURL].visit += 1;
+        urlDatabase[shortURL].visits += 1;
         let uniqueVisitors = urlDatabase[shortURL].uniqueVisitors;
         
         // get visitor and date
@@ -268,9 +264,9 @@ app.post("/register", (req, res) => {
         }
         else {
           users[user_id] = {
-            "user_id": user_id,
-            "email": email,
-            "hashedPassword": hashedPassword
+            user_id: user_id,
+            email: email,
+            hashedPassword: hashedPassword
             };
             req.session.user_id = user_id;
             res.redirect("/urls");
